@@ -16,6 +16,8 @@ public class Policy {
         lastName = "";
         age = 0;
         smokingStatus = "non-smoker";
+        height = 0;
+        weight = 0;
     }
 
     // Parameterized constructor
