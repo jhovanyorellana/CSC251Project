@@ -1,74 +1,45 @@
 public class Policy {
+    private static int policyCount = 0; // Static counter
     private int policyNumber;
     private String providerName;
-    private String firstName;
-    private String lastName;
-    private int age;
-    private String smokingStatus;
-    private double height;
-    private double weight;
+    private PolicyHolder policyHolder; // Class collaboration
 
-    // No-arg constructor (default values)
-    public Policy() {
-        policyNumber = 0;
-        providerName = "";
-        firstName = "";
-        lastName = "";
-        age = 0;
-        smokingStatus = "non-smoker";
-        height = 0;
-        weight = 0;
-    }
-
-    // Parameterized constructor
-    public Policy(int policyNumber, String providerName, String firstName, String lastName, int age, String smokingStatus, double height, double weight) {
+    // Constructor
+    public Policy(int policyNumber, String providerName, PolicyHolder holder) {
         this.policyNumber = policyNumber;
         this.providerName = providerName;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.smokingStatus = smokingStatus;
-        this.height = height;
-        this.weight = weight;
+        this.policyHolder = new PolicyHolder(holder); // Defensive copy
+        policyCount++;
     }
 
-    // Getters and Setters (for all fields)
+    // Getters (with defensive copying for PolicyHolder)
     public int getPolicyNumber() { return policyNumber; }
-    public void setPolicyNumber(int policyNumber) { this.policyNumber = policyNumber; }
-
     public String getProviderName() { return providerName; }
-    public void setProviderName(String providerName) { this.providerName = providerName; }
-
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-
-    public int getAge() { return age; }
-    public void setAge(int age) { this.age = age; }
-
-    public String getSmokingStatus() { return smokingStatus; }
-    public void setSmokingStatus(String smokingStatus) { this.smokingStatus = smokingStatus; }
-
-    public double getHeight() { return height; }
-    public void setHeight(double height) { this.height = height; }
-
-    public double getWeight() { return weight; }
-    public void setWeight(double weight) { this.weight = weight; }
-
-    // Calculate BMI
-    public double getBMI() {
-        return (weight * 703) / (height * height);
+    public PolicyHolder getPolicyHolder() { 
+        return new PolicyHolder(policyHolder); 
     }
 
-    // Calculate Policy Price
+    // Calculate policy price
     public double calculatePrice() {
-        double price = 600.0;
-        if (age > 50) price += 75;
-        if (smokingStatus.equalsIgnoreCase("smoker")) price += 100;
-        double bmi = getBMI();
-        if (bmi > 35) price += (bmi - 35) * 20;
-        return price;
+        double baseFee = 600;
+        double additionalFee = 0;
+
+        if (policyHolder.getAge() > 50) additionalFee += 75;
+        if (policyHolder.getSmokingStatus().equals("Y")) additionalFee += 100;
+        if (policyHolder.calculateBMI() > 35) additionalFee += (policyHolder.calculateBMI() - 35) * 20;
+
+        return baseFee + additionalFee;
+    }
+
+    // Static method to get policy count
+    public static int getPolicyCount() { return policyCount; }
+
+    // toString
+    @Override
+    public String toString() {
+        return String.format(
+            "Policy Number: %d\nProvider Name: %s\n%s\nPolicy Price: $%.2f",
+            policyNumber, providerName, policyHolder.toString(), calculatePrice()
+        );
     }
 }
